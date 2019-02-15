@@ -5,8 +5,8 @@
 # Authors       : 	Suresh Hewapathirana
 # Date          : 	2019-02-14
 # Description   : 	Remove CV term description from Submission.px Metadata
-# Format        :   python3 cv_term_corrector.py -i  <input file>
-# Example       :   python3 cv_term_corrector.py -i path/to/submission.px
+# Format        :   python3 cv_term_corrector.py -i  <input file> -o  <output file>
+# Example       :   python3 cv_term_corrector.py -i path/to/input/submission.px -o  path/to/output/submission.px
 # -----------------------------------------------------------------------------------------
 
 import argparse
@@ -18,28 +18,30 @@ def main():
     # construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--input", required=True, help="Input filename")
+    ap.add_argument("-o", "--output", required=True, help="output filename")
     args = vars(ap.parse_args())
 
     # assign values of the arguments
     input_filename = args["input"]
-    px_submission_file = open(input_filename, "r")
+    output_filename = args["output"]
+    input_px_submission_file = open(input_filename, "r")
+
 
     # initialise variables
-    output_filename = "submission.px"
     modified_data = ""
     line_number = 0
 
-    for line in px_submission_file.readlines():
+    for line in input_px_submission_file.readlines():
         match = re.search('MTD\t\w*\t\[\w*,.*:\d*,.*,(.*)]', line)
         if match and match.group(1) is not None and match.group(1) != " ":
             line = modify_line(match, line, line_number)
         modified_data += line
         line_number = line_number + 1
-    px_submission_file.close()
+    input_px_submission_file.close()
 
-    f = open(output_filename, 'w')
-    f.write(modified_data)
-    f.close()
+    output_px_submission_file = open(output_filename, 'w')
+    output_px_submission_file.write(modified_data)
+    output_px_submission_file.close()
     progressbar.show()
 
 
